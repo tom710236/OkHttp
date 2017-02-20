@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -20,18 +23,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+
+
         String url="http://demo.shinda.com.tw/ModernWebApi/WebApiLogin.aspx";
 
-        OkHttpClient client = new OkHttpClient();                                                                //1、
+        OkHttpClient client = new OkHttpClient();
                 RequestBody body2 = new FormBody.Builder()
                 .add("postdata", "{\"cAccount\":\"carlos\",\"cPassword\":\"123\"}")
                 .build();
         Request request = new Request.Builder()
                 .url(url)
                 .post(body2)
-                .build();                                                                                        //2、
-        Call call = client.newCall(request);                                                                    //3、
-        call.enqueue(new Callback() {                                                                            //4、
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -39,12 +46,31 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.e("OkHttp ",response.toString());                                                            //5、
-                Log.e("OkHttp2", response.body().string());
+                String json = response.body().string();
+                Log.e("OkHttp ",response.toString());
+                Log.e("OkHttp2", json);
 
-                response.close();
+                parseJson(json);
+
+
+            }
+            private void parseJson(String json) {
+
+                try {
+                    String cStatus = new JSONObject(json).getString("cStatus");
+
+                    Log.e("JSOM",cStatus);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
+
+
+
+
 
 
     }
